@@ -1,10 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { Todo } from '../../Interfaces/todo'
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'todo-list',
   templateUrl: './todo-list.component.html',
-  styleUrls: ['./todo-list.component.scss']
+  styleUrls: ['./todo-list.component.scss'],
+  animations:[
+  trigger('fade',[
+      
+      transition(':enter',[
+        style({opacity: 0, transform: 'translateY(30px)'}),
+        animate(200,style({opacity:1, transform: 'translateY(0px)'}))
+      ]),
+
+      transition(':leave',[
+       animate(200,style({opacity:0, transform:'translateY(30px)'}))
+      ])
+
+    ])
+  ]
 })
 export class TodoListComponent implements OnInit {
 
@@ -12,6 +27,7 @@ export class TodoListComponent implements OnInit {
   todoTitle: string
   idForTodo: number
   beforeEditCashe: string
+  filter:string
 
   constructor() { }
 
@@ -39,7 +55,6 @@ export class TodoListComponent implements OnInit {
         'editing': false,
       },
     ];
-
   }
 
   addTodo(): void {
@@ -82,5 +97,32 @@ export class TodoListComponent implements OnInit {
   remainingTodos():number{
     return this.todos.filter(x=>!x.completed).length
   }
+
+  atLeastOneCompleted():boolean{
+    return this.todos.filter(x=>x.completed).length >0
+  }
+
+  clearCompletedItems():void{
+    this.todos = this.todos.filter(x=>!x.completed)
+  }
+
+  checkAllTodos():void{
+    for(let todo of this.todos){
+      todo.completed = !todo.completed
+    }
+   this.todos.forEach(x=>x.completed =(<HTMLInputElement>event.target).checked)
+  }
+
+  filterTodos():Todo[]{
+    if(this.filter === "all"){
+      return this.todos
+    }else if(this.filter === "active"){
+      return this.todos.filter(x=>!x.completed)
+    }else if(this.filter === "completed"){
+      return this.todos.filter(x=>x.completed)
+    }
+    return this.todos
+  }
+  
 
 }
