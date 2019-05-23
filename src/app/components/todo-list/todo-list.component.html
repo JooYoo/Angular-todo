@@ -5,7 +5,7 @@
 
 <input type="text" class="todo-input" placeholder="..." [(ngModel)]="todoTitle" (keyup.enter)="addTodo()">
 
-<!-- 被移动大了Components/todo-item中
+<!-- =>Components/todo-item
 <div class="todo-item" *ngFor="let todo of filterTodos()" @fade>
   <div class="todo-item-left">
     <input type="checkbox" [(ngModel)]="todo.completed">
@@ -24,7 +24,12 @@
 
 <todo-item *ngFor="let todo of filterTodos()" 
            [todo]="todo"
-           (editDone_c)="editDone($event)">
+           (editDone_c)="editDone($event)"
+           (doubleClickedItem)="editTodo($event)"
+           (blurredItem)="editDone($event)"
+           (enteredItem)="editDone($event)"
+           (cancelledItem)="cancelTodo($event)"
+           (deletedItem)="deleteTodo($event)">
 </todo-item>
 
 <div class="extra-container">
