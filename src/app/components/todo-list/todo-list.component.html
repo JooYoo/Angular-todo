@@ -3,7 +3,7 @@
 </p>
 
 
-<input type="text" class="todo-input" placeholder="..." [(ngModel)]="todoTitle" (keyup.enter)="addTodo()">
+<input type="text" class="todo-input" placeholder="..." [(ngModel)]="todoService.todoTitle" (keyup.enter)="todoService.addTodo()">
 
 <!-- =>Components/todo-item
 <div class="todo-item" *ngFor="let todo of filterTodos()" @fade>
@@ -22,31 +22,25 @@
   </div>
 </div> -->
 
-<todo-item *ngFor="let todo of filterTodos()" 
-           [todo]="todo"
-           (editDone_c)="editDone($event)"
-           (doubleClickedItem)="editTodo($event)"
-           (blurredItem)="editDone($event)"
-           (enteredItem)="editDone($event)"
-           (cancelledItem)="cancelTodo($event)"
-           (deletedItem)="deleteTodo($event)">
+<todo-item *ngFor="let todo of todoService.filterTodos()" 
+           [todo]="todo">
 </todo-item>
 
 <div class="extra-container">
   <div>
-    <label><input type="checkbox" (click)="checkAllTodos()">Check All</label>
+    <label><input type="checkbox" (click)="todoService.checkAllTodos()">Check All</label>
   </div>
-  <div> {{remainingTodos()}} items left</div>
+  <div> {{todoService.remainingTodos()}} items left</div>
 </div>
 
 <div class="extra-container">
   <div>
-    <button (click)="filter = 'all'" [ngClass]="{'active': filter === 'all'}">All</button>
-    <button (click)="filter = 'active'" [ngClass]="{'active': filter === 'active'}">Active</button>
-    <button (click)="filter = 'completed'" [ngClass]="{'active': filter === 'completed'}">Completed</button>
+    <button (click)="todoService.filter = 'all'" [ngClass]="{'active': todoService.filter === 'all'}">All</button>
+    <button (click)="todoService.filter = 'active'" [ngClass]="{'active': todoService.filter === 'active'}">Active</button>
+    <button (click)="todoService.filter = 'completed'" [ngClass]="{'active': todoService.filter === 'completed'}">Completed</button>
   </div>
 
-  <div *ngIf="atLeastOneCompleted()">
-    <button (click)="clearCompletedItems()">Clear Completed</button>
+  <div *ngIf="todoService.atLeastOneCompleted()">
+    <button (click)="todoService.clearCompletedItems()">Clear Completed</button>
   </div>
 </div>
