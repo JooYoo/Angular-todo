@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Todo } from '../Interfaces/todo';
+import { environment } from 'src/environments/environment';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { catchError } from 'rxjs/operators';
+import { throwError as observableThrowError } from 'rxjs'
+
+const API_URL = environment.apiUrl
 
 @Injectable({
   providedIn: 'root'
@@ -9,28 +15,23 @@ export class TodoService {
   idForTodo: number = 4
   beforeEditCashe: string = ''
   filter: string = 'all'
-  todos: Todo[] = [
-    {
-      'id': 1,
-      'title': 'Finish Angular Screencast',
-      'completed': false,
-      'editing': false,
-    },
-    {
-      'id': 2,
-      'title': 'Take over world',
-      'completed': false,
-      'editing': false,
-    },
-    {
-      'id': 3,
-      'title': 'One more thing',
-      'completed': false,
-      'editing': false,
-    },
-  ];
+  todos: Todo[] = [];
 
-  constructor() { }
+  constructor(private http: HttpClient) {
+    this.getTodos();
+  }
+
+  getTodos(): void {
+    this.http.get(API_URL + '/todos')
+      .pipe(catchError(this.errorHandler))
+      .subscribe((response: any) => {
+        this.todos = response
+      })
+  }
+
+  errorHandler(error: HttpErrorResponse) {
+    return observableThrowError(error.message || 'Something went wrong!')
+  }
 
   addTodo(): void {
     if (this.todoTitle.trim().length === 0) {
@@ -66,35 +67,38 @@ export class TodoService {
   }
 
   deleteTodo(id: number): void {
-    this.todos = this.todos.filter(todo => todo.id !== id)
+    this.http.delete(API_URL + '/todos/' + id)
+      .subscribe((respons: any) => {
+        this.todos = this.todos.filter(todo => todo.id !== id)
+      })
   }
 
-  remainingTodos():number{
-    return this.todos.filter(x=>!x.completed).length
+  remainingTodos(): number {
+    return this.todos.filter(x => !x.completed).length
   }
 
-  atLeastOneCompleted():boolean{
-    return this.todos.filter(x=>x.completed).length >0
+  atLeastOneCompleted(): boolean {
+    return this.todos.filter(x => x.completed).length > 0
   }
 
-  clearCompletedItems():void{
-    this.todos = this.todos.filter(x=>!x.completed)
+  clearCompletedItems(): void {
+    this.todos = this.todos.filter(x => !x.completed)
   }
 
-  checkAllTodos():void{
-    for(let todo of this.todos){
+  checkAllTodos(): void {
+    for (let todo of this.todos) {
       todo.completed = !todo.completed
     }
-   this.todos.forEach(x=>x.completed =(<HTMLInputElement>event.target).checked)
+    this.todos.forEach(x => x.completed = (<HTMLInputElement>event.target).checked)
   }
 
-  filterTodos():Todo[]{
-    if(this.filter === "all"){
+  filterTodos(): Todo[] {
+    if (this.filter === "all") {
       return this.todos
-    }else if(this.filter === "active"){
-      return this.todos.filter(x=>!x.completed)
-    }else if(this.filter === "completed"){
-      return this.todos.filter(x=>x.completed)
+    } else if (this.filter === "active") {
+      return this.todos.filter(x => !x.completed)
+    } else if (this.filter === "completed") {
+      return this.todos.filter(x => x.completed)
     }
     return this.todos
   }
