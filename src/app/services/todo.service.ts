@@ -38,14 +38,20 @@ export class TodoService {
       return
     }
 
-    this.todos.push({
-      id: this.idForTodo,
+    this.http.post(API_URL + '/todos/', {
       title: this.todoTitle,
-      completed: false,
-      editing: false
+      completed: false
     })
+      .subscribe((response: any) => {
+        this.todos.push({
+          id: response.id,
+          title: this.todoTitle,
+          completed: false,
+          editing: false
+        })
+        this.todoTitle = ''
+      })
 
-    this.todoTitle = ''
     this.idForTodo++;
   }
 
@@ -58,6 +64,12 @@ export class TodoService {
     if (todo.title.trim().length === 0) {
       todo.title = this.beforeEditCashe
     }
+
+    this.http.patch(API_URL + '/todos/' + todo.id, {
+      title: todo.title,
+      completed: todo.completed
+    }).subscribe((response: any) => { })
+
     todo.editing = false
   }
 
@@ -86,10 +98,14 @@ export class TodoService {
   }
 
   checkAllTodos(): void {
+    const checkedTodo = (<HTMLInputElement>event.target).checked;
+
     for (let todo of this.todos) {
+
       todo.completed = !todo.completed
     }
-    this.todos.forEach(x => x.completed = (<HTMLInputElement>event.target).checked)
+    this.todos.forEach(todo => todo.completed = checkedTodo)
+
   }
 
   filterTodos(): Todo[] {

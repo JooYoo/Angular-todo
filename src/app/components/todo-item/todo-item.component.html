@@ -1,6 +1,6 @@
 <div class="todo-item">
   <div class="todo-item-left">
-    <input type="checkbox" [(ngModel)]="todo.completed">
+    <input type="checkbox" [(ngModel)]="todo.completed" (change)="todoService.editDone(todo)">
     <div *ngIf="!todo.editing; else goEditing" class="todo-item-label " [ngClass]="{'completed':todo.completed}"
       (dblclick)="todoService.editTodo(todo)">{{todo.title}}
     </div>
